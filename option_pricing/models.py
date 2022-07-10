@@ -1,4 +1,6 @@
 import math
+from abc import ABCMeta, abstractmethod
+from copy import deepcopy
 
 import numpy as np
 import scipy.stats
@@ -6,7 +8,20 @@ import scipy.stats
 from option_pricing.options import Call, Option, Put
 
 
-class BinomialModel:
+class OptionModel(metaclass=ABCMeta):
+    @abstractmethod
+    def calc_option_price(self, option: Option) -> tuple[float, dict]:
+        """
+        Calculate the price of the option in the model.
+
+        Return can depending on the model provide more information in the second argument.
+        :param option: the option to calculate the price off
+        :return: Tuple with the price and dict of additional information
+        """
+        pass
+
+
+class BinomialModel(OptionModel):
     """
     Implementation of Binomial model after Cox-Ross-Rubinstein.
 
@@ -63,18 +78,19 @@ class BinomialModel:
         :param delta_t:
         :return:
         """
+        price_tree = deepcopy(option_tree)
         for j in range(self.periods - 1, -1, -1):
             for i in range(j + 1):
                 option_price = (
-                    pu * option_tree[i + 1][j + 1] + pd * option_tree[i][j + 1]
+                    pu * price_tree[i + 1][j + 1] + pd * price_tree[i][j + 1]
                 ) * np.exp(-1 * (r - div) * delta_t)
                 # Use Early exercise price
                 if option.american:
-                    option_price = np.maximum(option_price, option_tree[i][j])
+                    option_price = np.maximum(option_price, price_tree[i][j])
 
-                option_tree[i][j] = option_price
+                price_tree[i][j] = option_price
 
-        return option_tree
+        return price_tree
 
     def calc_option_price(self, option: Option):
         """
@@ -97,14 +113,18 @@ class BinomialModel:
             price_beginning=underlying.base_beginning, up=u, down=d
         )
         payoff_tree = self.option_payoff_tree(stock_tree, option)
-        payoff_tree = self.recurse_option_tree(
+        price_tree = self.recurse_option_tree(
             payoff_tree, option, pu, pd, r, div, delta_t
         )
 
-        return payoff_tree[0][0], payoff_tree, stock_tree
+        return price_tree[0][0], {
+            "payoff_tree": payoff_tree,
+            "stock_tree": stock_tree,
+            "price_tree": price_tree,
+        }
 
 
-class BlackScholesModel:
+class BlackScholesModel(OptionModel):
     """
     The Black-Scholes model, also known as the Black-Scholes-Merton (BSM) model,
     is one of the most important concepts in modern financial theory.
@@ -161,4 +181,4 @@ class BlackScholesModel:
         else:
             raise RuntimeError(f"Black Scholes not implemented for {type(option)}.")
 
-        return option_price
+        return option_price, {}
