@@ -4,7 +4,7 @@ from tqdm import tqdm
 import numpy as np
 plt.style.use("bmh")
 
-underlying = Underlying(base_beginning=13144.28, volatility=0.2414, dividend=0.00, interest_rate=-0.0517)
+underlying = Underlying(base_beginning=13144.28, volatility=0.2414, dividend=0.00, interest_rate=-0.00517)
 option = Option(underlying, strike_price=14000.0, is_call=False, american=False, T=0.5)
 
 
