@@ -2,14 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
 
-from option_pricing import BinomialModel, BlackScholesModel, Option, Underlying
+from option_pricing import BinomialModel, BlackScholesModel, Put, Underlying
 
 plt.style.use("bmh")
 
 underlying = Underlying(
     base_beginning=13144.28, volatility=0.2414, dividend=0.00, interest_rate=-0.00517
 )
-option = Option(underlying, strike_price=14000.0, is_call=False, american=False, T=0.5)
+option = Put(underlying, strike_price=14000.0, american=False, T=0.5)
 
 # Use the binomial model to calculate the option price
 price, option_tree, stock_tree = BinomialModel(periods=100).calc_option_price(option)
