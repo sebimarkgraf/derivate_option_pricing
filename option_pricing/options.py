@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass()
 class Underlying:
     """
     Underlying allows to add different underlyings in an abstract way.
@@ -19,7 +19,7 @@ class Underlying:
     interest_rate: float
 
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass()
 class Option(metaclass=ABCMeta):
     """
     An option created for an underlying.
@@ -43,3 +43,15 @@ class Call(Option):
 class Put(Option):
     def option_payoff(self, price):
         return np.maximum(0, self.strike_price - price)
+
+
+@dataclasses.dataclass
+class SprintCertificate(Option):
+    cap: float
+    factor: float
+
+    def option_payoff(self, price):
+        cap_payout = (self.cap - self.strike_price) * self.factor
+        return np.minimum(
+            cap_payout, np.maximum(0, (price - self.strike_price) * self.factor)
+        )

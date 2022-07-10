@@ -1,4 +1,11 @@
 from .models import BinomialModel, BlackScholesModel
-from .options import Call, Put, Underlying
+from .options import Call, Put, SprintCertificate, Underlying
 
-__all__ = ["Underlying", "Call", "Put", "BinomialModel", "BlackScholesModel"]
+__all__ = [
+    "Underlying",
+    "Call",
+    "Put",
+    "SprintCertificate",
+    "BinomialModel",
+    "BlackScholesModel",
+]
