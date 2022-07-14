@@ -52,9 +52,12 @@ class SprintCertificate(Option):
 
     def option_payoff(self, price):
         cap_payout = (self.cap - self.strike_price) * self.factor
-        return np.minimum(
-            cap_payout,
-            np.maximum(
-                price - self.strike_price, (price - self.strike_price) * self.factor
-            ),
+        return (
+            np.minimum(
+                cap_payout,
+                np.maximum(
+                    price - self.strike_price, (price - self.strike_price) * self.factor
+                ),
+            )
+            + price
         )

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 from abc import ABCMeta, abstractmethod
 from copy import deepcopy
