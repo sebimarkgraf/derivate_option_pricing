@@ -1,6 +1,7 @@
 import dataclasses
 from abc import ABCMeta, abstractmethod
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -33,6 +34,23 @@ class Option(metaclass=ABCMeta):
     @abstractmethod
     def option_payoff(self, price):
         pass
+
+    def plot_payoff(self, price_range=None):
+        if price_range is None:
+            min_price = self.underlying.base_beginning * (
+                1 - self.underlying.volatility
+            )
+            max_price = self.underlying.base_beginning * (
+                1 + self.underlying.volatility
+            )
+            price_range = [min_price, max_price]
+
+        prices = np.linspace(*price_range, num=200)
+        fig, ax = plt.subplots()
+        ax.plot(prices, self.option_payoff(prices))
+        ax.set(title="Payoff", xlabel="Underlying Price", ylabel="Payout")
+
+        return fig
 
 
 class Call(Option):

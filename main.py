@@ -70,10 +70,8 @@ sprint = SprintCertificate(
 )
 price, extra = BinomialModel(periods=1000).calc_option_price(sprint)
 print(f"f) Sprint Certificate Price: {price / 100}")
-prices = np.linspace(13000, 15000, num=200)
 
-fig, ax = plt.subplots()
-ax.plot(prices, sprint.option_payoff(prices))
-ax.set(title="Payoff Sprint Zertifikat", xlabel="Basispunkte", ylabel="Payout")
+
+fig = sprint.plot_payoff()
 plt.savefig("sprint_payout.png")
 plt.close(fig)
